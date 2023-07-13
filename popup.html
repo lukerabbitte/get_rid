@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -7,21 +8,25 @@
     <link rel="stylesheet" href="./popup.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" />
   </head>
+
   <body>
-    <template id="li_template">
-      <li> <!--List item-->
-        <a> <!--This is a comment. Comments are not displayed in the browser-->
-          <h3 class="title">Tab Title</h3>
-          <p class="url">Tab URL</p>
+
+    <template id="listItemTemplate">
+      <li>
+        <a>
+          <p class="url">Sample set of tabs</p>
         </a>
       </li>
     </template>
 
+    <h1>&#x1F42C;</h1>
     <h1>Luke's Get Rid</h1>
-    <button>Get rid of current tabs</button>
-    <button>Tabs previously gotten rid of</button>
-    <ul></ul>   <!--Into this unordered list are appended all li list items, which are the clones of the template-->
+    <button id="getRidButton">Get rid of current tabs</button>
+    <button id="retrieveButton">Tabs previously gotten rid of</button>
+    <ul id=""dropdownMenu></ul>
 
     <script src="./popup.js" type="module"></script>
+
   </body>
+
 </html> 
