@@ -46,3 +46,31 @@
 </script>
 ```
 - Navigator is an object within window object in JS environment. It can be used to provide metadata about the browser being used, the user agent, and some geolocation stuff if we ask. navigator.userAgent property lets devs implement feature detection and device detection stuff. Warning that this stuff is easily spoofed.
+
+- %{variable} is used in JS to insert the value of a variable into a string.
+
+- Callback functions are used to handle results or errors of async functions. For example, fetch, we then use callback functions to parse the response as json, and then to pick apart the data of the response, etc.
+
+- ``.then(function(response) {
+  return response.json();
+})`` ... this is how to type out ``.then(response => response.json())`` in traditional way.
+
+```
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  x.innerHTML = "Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude;
+}
+```
+- Think of the above as chaining the return value from getCurrentPosition of the geolocation API into our custom function showPosition. This lets us work with the async returned data from another function completely. This lets us perform actions once we receive the data in an easier to read manner. The 'position' parameter name is arbitrary and could be changed to anything.
+
+
+
+
