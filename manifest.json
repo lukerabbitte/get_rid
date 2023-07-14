@@ -7,6 +7,6 @@
     },
     "host_permissions": ["<all_urls>"],
     "permissions": [
-      "storage", "tabs"
+      "storage", "tabs", "geolocation"
     ]
   }
