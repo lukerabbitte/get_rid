@@ -1,89 +1,21 @@
 const storage = chrome.storage.local;
+
 const tabs = await chrome.tabs.query({currentWindow: true});
 const currentUrls = tabs.map((tab) => tab.url);
-
 const currentTabs = {
   stringID: generateString(),
-  urls: currentUrls,
+  urls: currentUrls
 }
 
 function generateString() {
-  const emoji = getRandomEmoji();
-  const date = getDate();
-  //const location = generateLocation();
-
-  // Concatenate the results with spaces in between
-  const resultString = `${emoji} ${date}`;
-  
-  return resultString;
+  const randomIndex = Math.floor(Math.random() * emojis.length);
+  return emojis[randomIndex];
 }
-
 
 function getRandomEmoji() {
-  // Selected within 'Misc Symbols and Pictographs' range
-  const startCodePoint = 0x1F300;
-  const endCodePoint = 0x1F531;
-
-  // Generate a random integer within the specified range
-  const randomCodePoint = startCodePoint + Math.floor(Math.random() * (endCodePoint - startCodePoint + 1));
-
-  // Convert the random code point to an actual symbol
-  const symbol = String.fromCodePoint(randomCodePoint);
-  return symbol;
+  const randomIndex = Math.floor(Math.random() * emojis.length);
+  return emojis[randomIndex];
 }
-
-function getDate() {
-  // Generate date string laid out in local format
-  const currentDate = new Date();
-  return currentDate.toLocaleDateString();
-}
-
-function generateLocation() {
-  // TODO
-}
-
-document.getElementById
-
-
-
-
-
-
-
-
-
-
-
-
-
-storage.set({ savedUrls: currentUrls }, function() {
-  console.log('URLs saved successfully');
-});
-
-storage.get('savedUrls', function(result) {
-  const savedUrls = result.savedUrls;
-  console.log('Retrieved URLs:', savedUrls);
-});
-
-const template = document.getElementById("listItemTemplate");
-const elements = new Set();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function getLocationName() {
 
@@ -118,3 +50,20 @@ function getLocationName() {
     console.log('Geolocation is not supported');
   }
 }
+
+function getDate() {
+  const currentDate = new Date();
+  return currentDate.toLocaleDateString();
+}
+
+storage.set({ savedUrls: currentUrls }, function() {
+  console.log('URLs saved successfully');
+});
+
+storage.get('savedUrls', function(result) {
+  const savedUrls = result.savedUrls;
+  console.log('Retrieved URLs:', savedUrls);
+});
+
+const template = document.getElementById("listItemTemplate");
+const elements = new Set();
