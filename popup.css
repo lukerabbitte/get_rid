@@ -3,16 +3,7 @@ body {
     font-family: "Roboto Mono", monospace;
   }
 
-button#getRidButton {
-  font-family: 'Roboto Mono', monospace;
-  border: none;
-  background-color: #d5e8f9;
-  color: #001120;
-  padding: 10px;
-  border-radius: 1rem;
-  margin-bottom: 1rem;
-}
-button#retrieveButton {
+button.getRidButton {
   font-family: 'Roboto Mono', monospace;
   border: none;
   background-color: #d5e8f9;
