@@ -4,28 +4,31 @@ updateTestUrl();
 saveTestUrl();
 retrieveTestUrl();
 
+// Current tab object
 const currentTabSet = {
   uuid: uuidv4(),
   descriptiveString: generateString(),
   urls: currentUrls,
 }
 
+// Generate uuid
 function uuidv4() {
   return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
   );
 }
 
+// Generate string describing current tab set
 function generateString() {
   const emoji = getRandomEmoji();
   const date = getDate();
-  //const location = generateLocation(); // TODO
+  //const location = getLocationName(); // TODO
 
   const resultString = `${emoji} ${date}`;
   return resultString;
 }
 
-
+// Return random Unicode emoji
 function getRandomEmoji() {
   // Selected within 'Misc Symbols and Pictographs' range
   const startCodePoint = 0x1F300;
@@ -39,26 +42,36 @@ function getRandomEmoji() {
   return symbol;
 }
 
+// Return date in local format
 function getDate() {
-  // Generate date string laid out in local format
   const currentDate = new Date();
   return currentDate.toLocaleDateString();
 }
 
-function generateLocation() {
-  // TODO
-}
 
+// Test function to save one url at index 1 to Chrome storage sync and retrieve it to display.
 async function updateTestUrl() {
 
   // Select which url to save based on its index in currentUrls, created when initially mapping tabs to array above
   const firstUrl = currentUrls[1];
 
+  // Current tab object, has id, string, and url
   const currentTab = {
     uuid: uuidv4(),
     stringID: generateString(),
     url: firstUrl
   }
+
+  // Testing event listener for button
+  // TODO not working
+  document.addEventListener('DOMContentLoaded', function() {
+    let button = document.getElementById('getRidButton');
+    // onClick's logic below:
+    button.addEventListener('click', function() {
+      const sampleText = document.getElementById('testRetrieveUrl');
+      sampleText.textContent = 'Hello'
+    });
+  });
 
   // Save currentTab object to Chrome Storage
   await saveTestUrl(currentTab);
@@ -72,8 +85,13 @@ async function updateTestUrl() {
   // Test result by outputting to html element testRetrieveUrl
   const testRetrieveUrlElement = document.getElementById("testRetrieveUrl");
   testRetrieveUrlElement.textContent = retrievedObject.url;
+
+  // Test list item population
+  const testListItemElement = document.getElementById("testListItem");
+  testListItemElement.textContent = retrievedObject.url;
 }
 
+// Store with chrome storage sync
 function saveTestUrl(objectToSave) {
   return new Promise((resolve, reject) => {
     chrome.storage.sync.set({ [objectToSave.uuid]: objectToSave }, function () {
@@ -83,6 +101,7 @@ function saveTestUrl(objectToSave) {
   });
 }
 
+// Retrieve from chrome storage sync
 function retrieveTestUrl(uuid) {
   return new Promise((resolve, reject) => {
     chrome.storage.sync.get([uuid], function (result) {
@@ -98,53 +117,12 @@ function retrieveTestUrl(uuid) {
   });
 }
 
-
-
-
-
-
-
-
-
-
-
-
-storage.set({ savedUrls: currentUrls }, function() {
-  console.log('URLs saved successfully');
-});
-
-storage.get('savedUrls', function(result) {
-  const savedUrls = result.savedUrls;
-  console.log('Retrieved URLs:', savedUrls);
-});
-
-const template = document.getElementById("listItemTemplate");
-const elements = new Set();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// TODO fix issues with Maps API
 function getLocationName() {
 
   if (navigator.geolocation) {
 
     navigator.geolocation.getCurrentPosition(async (position) => {
-
-      
 
   
       // Access first result

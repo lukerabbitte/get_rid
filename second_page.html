@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tab Group List</title>
+    <style>
+        #scrollableDiv {
+            height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+<h2>List of Tab Groups:</h2>
+
+<div id="scrollableDiv">
+    <ul id="tabGroupList">
+        <!-- The list of tab group strings will be dynamically added here -->
+    </ul>
+</div>
+
+<script>
+    // Sample data representing the tab groups with generated strings and URLs
+    const tabGroups = [
+        {
+            name: "🚀 2023-07-16",
+            urls: ['https://www.example.com', 'https://www.sampleurl.com', 'https://www.testsite.org']
+        },
+        {
+            name: "🎉 2023-07-16",
+            urls: ['https://www.dummyurl.com', 'https://www.example.org', 'https://www.sample.com']
+        },
+        // Add more tab groups as needed
+    ];
+
+    // Function to open a new window with the associated URLs when a tab group string is clicked
+    function openTabGroupUrls(urls) {
+        chrome.windows.create({ url: urls, type: 'normal' });
+    }
+
+    // Function to create the tab group list in the scrollable div
+    function createTabGroupList() {
+        const tabGroupListElement = document.getElementById('tabGroupList');
+
+        tabGroups.forEach(tabGroup => {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = '#'; // We use '#' as a placeholder for the click event
+            link.textContent = tabGroup.name;
+            link.addEventListener('click', function() {
+                openTabGroupUrls(tabGroup.urls);
+            });
+            listItem.appendChild(link);
+            tabGroupListElement.appendChild(listItem);
+        });
+    }
+
+    // Call the function to create the tab group list when the page loads
+    window.addEventListener('DOMContentLoaded', createTabGroupList);
+</script>
+
+</body>
+</html>

@@ -22,10 +22,14 @@
     <h1>&#x1F42C;</h1>
     <h1>Luke's Get Rid</h1>
     <p id="testRetrieveUrl"> TestRetrieveUrl </p>
-    <button class="getRidButton">Get rid of current tabs</button>
-    <button class="getRidButton">Tabs previously gotten rid of</button>
-    <ul id=""dropdownMenu></ul>
-
+    <button id="getRidButton">Get rid of current tabs</button>
+    <div class="previousTabsContainer">
+      <p>Previous tabs gotten rid of</p>
+      <ul class="testTabs">
+        <li id="testListItem"></li>
+      </ul>
+    </div>
+    
     <script src="./popup.js" type="module"></script>
 
   </body>
