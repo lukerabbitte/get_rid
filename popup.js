@@ -1,18 +1,27 @@
+/*
 const tabs = await chrome.tabs.query({currentWindow: true});
-const currentUrls = tabs.map((tab) => tab.url);
-updateTestUrl();
-saveTestUrl();
-retrieveTestUrl();
+const currentURLs = tabs.map((tab) => tab.URL);
+updateTestURL();
+saveTestURL();
+retrieveTestURL();
 
 // Current tab object
 const currentTabSet = {
-  uuid: uuidv4(),
+  UUID: UUIDv4(),
   descriptiveString: generateString(),
-  urls: currentUrls,
+  URLs: currentURLs,
 }
+*/
 
-// Generate uuid
-function uuidv4() {
+
+/*
+--------------
+Util functions
+--------------
+*/
+
+// Generate UUID
+function UUIDv4() {
   return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
   );
@@ -48,75 +57,6 @@ function getDate() {
   return currentDate.toLocaleDateString();
 }
 
-
-// Test function to save one url at index 1 to Chrome storage sync and retrieve it to display.
-async function updateTestUrl() {
-
-  // Select which url to save based on its index in currentUrls, created when initially mapping tabs to array above
-  const firstUrl = currentUrls[1];
-
-  // Current tab object, has id, string, and url
-  const currentTab = {
-    uuid: uuidv4(),
-    stringID: generateString(),
-    url: firstUrl
-  }
-
-  // Testing event listener for button
-  // TODO not working
-  document.addEventListener('DOMContentLoaded', function() {
-    let button = document.getElementById('getRidButton');
-    // onClick's logic below:
-    button.addEventListener('click', function() {
-      const sampleText = document.getElementById('testRetrieveUrl');
-      sampleText.textContent = 'Hello'
-    });
-  });
-
-  // Save currentTab object to Chrome Storage
-  await saveTestUrl(currentTab);
-
-  // Retrieve a currentTab object from Chrome Storage using its UUID
-  const uuidToRetrieve = currentTab.uuid;
-  const retrievedObject = await retrieveTestUrl(uuidToRetrieve);
-
-  console.log("Retrieved object:", retrievedObject);
-
-  // Test result by outputting to html element testRetrieveUrl
-  const testRetrieveUrlElement = document.getElementById("testRetrieveUrl");
-  testRetrieveUrlElement.textContent = retrievedObject.url;
-
-  // Test list item population
-  const testListItemElement = document.getElementById("testListItem");
-  testListItemElement.textContent = retrievedObject.url;
-}
-
-// Store with chrome storage sync
-function saveTestUrl(objectToSave) {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.set({ [objectToSave.uuid]: objectToSave }, function () {
-      console.log("Test URL saved:", objectToSave);
-      resolve();
-    });
-  });
-}
-
-// Retrieve from chrome storage sync
-function retrieveTestUrl(uuid) {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get([uuid], function (result) {
-      const savedObject = result[uuid];
-      if (savedObject) {
-        console.log("Retrieved Test URL:", savedObject);
-        resolve(savedObject);
-      } else {
-        console.log("Test URL with UUID not found:", uuid);
-        reject(new Error("Object not found."));
-      }
-    });
-  });
-}
-
 // TODO fix issues with Maps API
 function getLocationName() {
 
@@ -149,3 +89,74 @@ function getLocationName() {
     console.log('Geolocation is not supported');
   }
 }
+
+
+// Test function to save one URL at index 1 to Chrome storage sync and retrieve it to display.
+async function updateTestURL() {
+
+  const tabs = await chrome.tabs.query({currentWindow: true});
+  const currentURLs = tabs.map((tab) => tab.URL);
+
+  // Current tab object, has id, string, and URL
+  const currentTab = {
+    //UUID: UUIDv4(),
+    UUID: 1234567890,
+    //stringID: generateString(),
+    stringID: "Tab set",
+    URL: currentURLs[1] // test by saving tab at index 1.
+  }
+
+  // Save currentTab object to Chrome Storage
+  await saveTestURL(currentTab);
+
+  // Retrieve a currentTab object from Chrome Storage using its UUID
+  const UUIDToRetrieve = currentTab.UUID;
+  const retrievedObject = await retrieveTestURL(UUIDToRetrieve);
+
+  // Test result by outputting to HTML element testRetrieveURL
+  const testRetrieveURLElement = document.getElementById("testRetrieveURL");
+  populateHTML('testRetrieveURL')
+  testRetrieveURLElement.textContent = `The returned value from chrome storage is ${retrievedObject.URL}`;
+
+}
+
+function populateHTML(html_id, id_message) {
+  // Get the element by its ID
+  var element = document.getElementById(html_id);
+
+  // Check if the element exists
+  if (element) {
+    // Set the text content of the element
+    element.textContent = id_message;
+  } else {
+    console.error("Element with ID '" + html_id + "' not found.");
+  }
+}
+
+// Store with chrome storage sync
+function saveTestURL(objectToSave) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.set({ [objectToSave.UUID]: objectToSave }, function () {
+      console.log("Test URL saved:", objectToSave);
+      resolve();
+    });
+  });
+}
+
+// Retrieve from chrome storage sync
+function retrieveTestURL(UUID) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get([UUID], function (result) {
+      const savedObject = result[UUID];
+      if (savedObject) {
+        console.log("Retrieved Test URL:", savedObject);
+        resolve(savedObject);
+      } else {
+        console.log("Test URL with UUID not found:", UUID);
+        reject(new Error("Object not found."));
+      }
+    });
+  });
+}
+
+updateTestURL();
