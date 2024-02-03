@@ -10,24 +10,13 @@ const updateTestURL = async () => {
     URL: currentURLs[1]
   }
 
-  await saveTestURL(currentTab);
+  // await saveTestURL(currentTab);
 
-  const UUIDToRetrieve = currentTab.UUID;
-  const retrievedObject = await retrieveTestURL(UUIDToRetrieve);
+  // const UUIDToRetrieve = currentTab.UUID;
+  // const retrievedObject = await retrieveTestURL(UUIDToRetrieve);
 
-  const testRetrieveURLElement = document.getElementById("testRetrieveURL");
-  populateHTML('testRetrieveURL')
-  testRetrieveURLElement.textContent = `The returned value from chrome storage is ${retrievedObject.URL}`;
-}
-
-const populateHTML = (html_id, id_message) => {
-  let element = document.getElementById(html_id);
-
-  if (element) {
-    element.textContent = id_message;
-  } else {
-    console.error("Element with ID '" + html_id + "' not found.");
-  }
+  const urlElement = document.querySelector("#testListItem .URL");
+  urlElement.textContent = "h";
 }
 
 const saveTestURL = (objectToSave) => {
@@ -52,11 +41,6 @@ const retrieveTestURL = (UUID) => {
       }
     });
   });
-}
-
-const printTest = () => {
-  console.log(utils.UUIDv4)
-  
 }
 
 updateTestURL();
