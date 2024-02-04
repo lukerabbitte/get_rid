@@ -2,7 +2,6 @@
     "manifest_version": 3,
     "name": "Luke's Get Rid",
     "version": "1.0",
-
     "author": "lrabbitt@tcd.ie",
     "action": {
         "default_popup": "popup.html"
