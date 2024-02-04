@@ -94,11 +94,13 @@ async function bootstrap() {
 }
 
 async function loadSavedWindows() {
-  // Load from storage API
+  // Load window objects from local storage API
+  
 }
 
 async function saveWindow() {
   try {
+    // Get current window information along with its tabs
     let window = await chrome.windows.getCurrent({ populate: true });
     tabs = {};
     tabIds = [];
@@ -108,14 +110,18 @@ async function saveWindow() {
       tabs[tab.id] = tab;
       appendToLog(`${tab.id}`)
     }
-
-    // Save window object to chrome.storage.sync
-    await setStorageData({ [window.id]: tabs })
+    
+    // Save window object to local storage
+    const data = { [window.id]: tabs }
+    chrome.storage.local.set(data, function() {
+      appendToLog(`Window object with id ${window.id} has been saved locally`);
+    });
   }
   catch (error) {
     appendToLog(`An error occurred: ${error.message}`);
   }
 }
+
 
 /*
 ----------
@@ -130,7 +136,7 @@ function appendToLog(logLine) {
 }
 
 document
-  .getElementById('saveWindow')
+  .getElementById('saveWindowButton')
   .addEventListener('click', function() {
     saveWindow();
   })
@@ -141,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /*
 ----------
-STORAGE FUNCTIONS
+SYNC STORAGE FUNCTIONS
 ----------
 */
 
