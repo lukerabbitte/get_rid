@@ -80,9 +80,33 @@ UTIL FUNCTIONS
 ----------
 */
 
-function memorableWindowName(windowObject, windowSavedAtTimestamp, tabObjects) {
+function memorableWindowName(windowObject, windowSavedAtTimestamp, windowTabObjects) {
   // Eventually extend to coming up with a rich, fun, and memorable name for each window
   return(windowObject.replace('GetRid_', ''))
+}
+
+function getRandomEmoji() {
+  try {
+      // Selected within 'Misc Symbols and Pictographs' range
+      const startCodePoint = 0x1F300;
+      const endCodePoint = 0x1F531;
+
+      // Generate a random integer within the specified range
+      const randomCodePoint = startCodePoint + Math.floor(Math.random() * (endCodePoint - startCodePoint + 1));
+
+      // Convert the random code point to an actual symbol
+      const symbol = String.fromCodePoint(randomCodePoint);
+      return symbol;
+  } catch (error) {
+      // If any error occurs (e.g., invalid code point), return a default smiley face
+      console.error('Error generating random emoji:', error);
+      return ":)";
+  }
+}
+
+function isValidTimestamp(timestamp) {
+  const date = new Date(timestamp);
+  return !isNaN(date);
 }
 
 /*
@@ -103,49 +127,66 @@ async function bootstrap() {
 
 /*
 ----------
+
 Objects saved in local storage in the following format:
 
 const windowObject = { 
   [windowObjectKey]: {
     tabs: tabs,
-    savedAtTimestamp: Date.now()
+    savedAtTimestamp: Date.now(),
+    emoji: windowEmoji
   }
 };
+
 ----------
 */
 async function loadSavedWindows() {
   // Load window objects from local storage API
   chrome.storage.local.get(null, function(windows) {
-    for (let windowKey in windows) {
-      if (windowKey.startsWith('GetRid_')) {       
-        let tabObjects = windows[windowKey].tabs;
-        let windowSavedAtTimestamp = windows[windowKey].savedAtTimestamp;
-        renderWindow(windowKey, windowSavedAtTimestamp, tabObjects);
+    for (let windowObject in windows) {
+      if (windowObject.startsWith('GetRid_')) {    
+        renderWindow(windowObject, windows[windowObject]);
       }
     }
   });
 }
 
-function renderWindow(windowName, windowSavedAtTimestamp, tabObjects) {
+function renderWindow(windowObjectKey, windowObjectValue) {
+
+  let windowTabObjects = windowObjectValue.tabs;
+  let formattedDate = isValidTimestamp(windowObjectValue.savedAtTimestamp) ? new Date(windowObjectValue.savedAtTimestamp).toLocaleString() : 'Saved at an unknown time...';
+  let windowEmoji = windowObjectValue.emoji || ':)';
+
   let windowTemplate = document.getElementById('windowItem').content;
 
   const windowItem = document.importNode(windowTemplate, true).children[0];
 
-  windowItem.querySelector('.window_name').innerText = windowName;
-  windowItem.querySelector('.window_timestamp').innerText = new Date(windowSavedAtTimestamp).toLocaleString();
+  // Passing the object key e.g. GetRid_1247408185 and windowItem DOM element
+  // registerWindowEvents(windowObjectKey, windowItem);
 
-  for (let tabObject in tabObjects) {
-    renderTab(tabObjects[tabObject], windowItem);
+  windowItem.querySelector('.window_emoji').innerText = windowEmoji;
+  windowItem.querySelector('.window_timestamp').innerText = formattedDate;
+
+  for (let tabObject in windowTabObjects) {
+    renderTab(windowTabObjects[tabObject], windowItem);
   }
 
   const windowList = document.getElementById('windowList');
   windowList.appendChild(windowItem);
 }
 
-function renderTab(tabObject, windowItem) {
+function registerWindowEvents(windowItem) {
+  windowItem
+    .querySelector('.window_refresh')
+    .addEventListener('click', function () {
+      refreshWindow(window.id);
+    });
+}
+
+function renderTab(tabObjectValue, windowItem) {
   let tabTemplate = document.getElementById('tabItem').content;
   const tabItem = document.importNode(tabTemplate, true).children[0];
-  tabItem.querySelector('.tab_favicon').src = tabObject.favIconUrl;
+  tabItem.querySelector('.tab_favicon').src = tabObjectValue.favIconUrl;
 
   const tabsList = windowItem.querySelector('#tabsList');
   tabsList.appendChild(tabItem);
@@ -163,15 +204,18 @@ async function saveWindow() {
     }
 
     // All our objects in local storage should have recognisable key e.g. [GetRid_1247408185]
-    let windowObjectKey = `GetRid_${window.id}`
-    
+    let windowObjectKey = `GetRid_${window.id}`;
+    let windowEmoji = getRandomEmoji();
+
     // Save window object to local storage
     const windowObject = { 
       [windowObjectKey]: {
         tabs: tabs,
-        savedAtTimestamp: Date.now()
+        savedAtTimestamp: Date.now(),
+        emoji: windowEmoji
       }
     };
+
     chrome.storage.local.set(windowObject, function() {
       appendToLog(`Window object of ID: ${window.id} has been saved locally`);
     });
@@ -203,39 +247,3 @@ document
 document.addEventListener('DOMContentLoaded', function () {
   bootstrap();
 });
-
-/*
-----------
-SYNC STORAGE FUNCTIONS
-----------
-*/
-
-function getStorageData(key) {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(key, result => {
-      if (chrome.runtime.lastError) {
-        reject(Error(chrome.runtime.lastError.message));
-      } else {
-        resolve(result);
-      }
-    });
-  });
-}
-
-async function fetchData() {
-  const { data } = await getStorageData('data');
-  return data;
-}
-
-function setStorageData(data) {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.set(data, () => {
-      if (chrome.runtime.lastError) {
-        reject(Error(chrome.runtime.lastError.message));
-      } else {
-        resolve();
-      }
-    });
-  });
-}
-

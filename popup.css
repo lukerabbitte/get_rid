@@ -4,27 +4,74 @@ body {
 }
 
 #saveWindowButton {
-font-family: 'Roboto Mono', monospace;
-border: none;
-background-color: #d5e8f9;
-color: #001120;
-padding: 10px;
-border-radius: 1rem;
-margin-bottom: 1rem;
+  font-family: 'Roboto Mono', monospace;
+  border: none;
+  background-color: #d5e8f9;
+  color: #001120;
+  padding: 10px;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+}
+
+.topContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.window {
+  display: flex;
+  flex-direction: column;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.windowDescription {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.window_emoji {
+  margin-right: 10px;
+}
+
+.tab {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  padding: 5px;
+}
+
+.tab_favicon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+#tabsList {
+  max-height: 15em;
+  overflow-y: auto;
 }
 
 li {
-padding: 0.25rem;
+  padding: 0.25rem;
 }
+
 li:nth-child(odd) {
-background: #80808030;
+  background: #80808030;
 }
+
 li:nth-child(even) {
-background: #ffffff;
+  background: #ffffff;
 }
 
 ul {
-list-style-type: none;
-padding-inline-start: 0;
-margin: 1rem 0;
+  list-style-type: none;
+  padding-inline-start: 0;
+  margin: 1rem 0;
 }

@@ -10,17 +10,24 @@
   </head>
 
   <body>
-    <h1>&#x1F42C;</h1>
-    <h1>Get Rid</h1>
-    <button id="saveWindowButton">Save window</button>
+    <div class="topContainer">
+      <h1 class="getRidEmoji">&#x1F42C;</h1>
+      <h1 class="getRidTitle">Get Rid</h1>
+    </div>
+    <button id="saveWindowButton">Get Rid</button>
     <div id="windowList">
       <!-- windowItems here-->
     </div>
 
     <template id="windowItem">
       <div class="window">
-        <p class="window_name"></p>
-        <p class="window_timestamp"></p>
+        <div class="windowDescription">
+          <p class="window_emoji"></p>
+          <p class="window_timestamp"></p>
+        </div>
+        <div>
+          <button id="removeWindowButton">Delete Tabs</button>
+        </div>
         <div id="tabsList">
           <!-- tabItems here-->
         </div>
