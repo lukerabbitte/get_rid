@@ -13,6 +13,18 @@
     <h1>&#x1F42C;</h1>
     <h1>Get Rid</h1>
     <button id="saveWindowButton">Save window</button>
+    <div id="windowList">
+      <!-- windowItems here-->
+    </div>
+
+    <template id="windowItem">
+      <div class="window">
+        <p class="window_name"></p>
+        <p class="window_timestamp"></p>
+        <p class="window_tabs"></p>
+      </div>
+    </template>
+
     <div id="log"></div>
     <script src="./popup.js" type="module"></script>
   </body>

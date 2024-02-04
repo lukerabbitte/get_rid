@@ -74,8 +74,16 @@ function getLocationName() {
   }
 }
 
+/*
+----------
+UTIL FUNCTIONS
+----------
 */
 
+function memorableWindowName(windowObject, windowSavedAtTimestamp, tabObjects) {
+  // Eventually extend to coming up with a rich, fun, and memorable name for each window
+  return(windowObject.replace('GetRid_', ''))
+}
 
 /*
 ----------
@@ -83,42 +91,111 @@ CORE FUNCTIONS
 ----------
 */
 
-let tabs = {}
-let tabIds = []
+let tabs = {};
+let tabIds = [];
 let currentWindowId = undefined;
 
 async function bootstrap() {
   const currentWindow = await chrome.windows.getCurrent();
   currentWindowId = currentWindow.id;
-  loadSavedWindows()
+  loadSavedWindows();
 }
 
+/*
+----------
+Objects saved in local storage in the following format:
+
+const windowObject = { 
+  [windowObjectKey]: {
+    tabs: tabs,
+    savedAtTimestamp: Date.now()
+  }
+};
+----------
+*/
 async function loadSavedWindows() {
   // Load window objects from local storage API
-  chrome.storage.local.get(null, function(items) {
-    for (let key in items) {
-      appendToLog(`Key: ${key}, Value: ${JSON.stringify(items[key])}`);
+  chrome.storage.local.get(null, function(windows) {
+    for (let windowKey in windows) {
+      if (windowKey.startsWith('GetRid_')) {       
+        let tabObjects = windows[windowKey].tabs;
+        for (let t in tabObjects) {
+          appendToLog(`Tab is of url: ${tabObjects[t].url}`)
+        }
+        let windowSavedAtTimestamp = windows[windowKey].savedAtTimestamp;
+        // renderWindow(windowKey, windowSavedAtTimestamp, tabObjects);
+      }
     }
   });
 }
+
+/*
+function renderWindow(windowName, windowSavedAtTimestamp, tabObjects) {
+
+  let windowTemplate = document.getElementById('windowItem').content;
+  let tabTemplate = document.getElementById('tabItem').content;
+
+  const windowItem = document.importNode(windowTemplate, true).children[0];
+
+  windowItem.querySelector('.window_name').innerText = windowName;
+  
+  windowItem.querySelector('#tabList').innerHTML = '';
+
+  for (let tabObject of tabObjects) {
+    const tabItem = document.importNode(tabTemplate, true).children[0];
+    // renderTab(tabObject, tabItem);
+    // registerTabEvents(tab, tabItem);
+    // windowItem.querySelector('#tabList').appendChild(tabItem);
+  }
+}
+*/
+
+function renderWindow(windowName, windowSavedAtTimestamp, tabObjects) {
+  let windowTemplate = document.getElementById('windowItem').content;
+
+  const windowItem = document.importNode(windowTemplate, true).children[0];
+
+  windowItem.querySelector('.window_name').innerText = windowName;
+  windowItem.querySelector('.window_timestamp').innerText = new Date(windowSavedAtTimestamp).toLocaleString();
+
+  for (let tabObject of tabObjects) {
+    appendToLog(tabObject.url);
+  }
+  windowItem.querySelector('.window_tabs').innerText = tabsText;
+
+  const windowList = document.getElementById('windowList');
+  windowList.appendChild(windowItem);
+}
+
+/*
+function renderTab(tab, tabItem) {
+
+}
+*/
 
 async function saveWindow() {
   try {
     // Get current window information along with its tabs
     let window = await chrome.windows.getCurrent({ populate: true });
     tabs = {};
-    tabIds = [];
     appendToLog(`Window of ID: ${window.id} has ${window.tabs.length} tabs`)
     for(let tab of window.tabs) {
-      tabIds.push(tab.id);
       tabs[tab.id] = tab;
-      appendToLog(`${tab.id}`)
+      // appendToLog(`${tab.id}`)
     }
+
+    // All our objects in local storage should have recognisable key e.g. [GetRid_1247408185]
+    let windowObjectKey = `GetRid_${window.id}`
     
     // Save window object to local storage
-    const data = { [window.id]: tabs }
-    chrome.storage.local.set(data, function() {
-      appendToLog(`Window object with id ${window.id} has been saved locally`);
+    const windowObject = { 
+      [windowObjectKey]: {
+        tabs: tabs,
+        savedAtTimestamp: Date.now()
+      }
+    };
+    chrome.storage.local.set(windowObject, function() {
+      appendToLog(`Window object of ID: ${window.id} has been saved locally`);
     });
   }
   catch (error) {
