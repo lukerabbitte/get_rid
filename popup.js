@@ -95,7 +95,11 @@ async function bootstrap() {
 
 async function loadSavedWindows() {
   // Load window objects from local storage API
-  
+  chrome.storage.local.get(null, function(items) {
+    for (let key in items) {
+      appendToLog(`Key: ${key}, Value: ${JSON.stringify(items[key])}`);
+    }
+  });
 }
 
 async function saveWindow() {
