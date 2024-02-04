@@ -119,36 +119,12 @@ async function loadSavedWindows() {
     for (let windowKey in windows) {
       if (windowKey.startsWith('GetRid_')) {       
         let tabObjects = windows[windowKey].tabs;
-        for (let t in tabObjects) {
-          appendToLog(`Tab is of url: ${tabObjects[t].url}`)
-        }
         let windowSavedAtTimestamp = windows[windowKey].savedAtTimestamp;
-        // renderWindow(windowKey, windowSavedAtTimestamp, tabObjects);
+        renderWindow(windowKey, windowSavedAtTimestamp, tabObjects);
       }
     }
   });
 }
-
-/*
-function renderWindow(windowName, windowSavedAtTimestamp, tabObjects) {
-
-  let windowTemplate = document.getElementById('windowItem').content;
-  let tabTemplate = document.getElementById('tabItem').content;
-
-  const windowItem = document.importNode(windowTemplate, true).children[0];
-
-  windowItem.querySelector('.window_name').innerText = windowName;
-  
-  windowItem.querySelector('#tabList').innerHTML = '';
-
-  for (let tabObject of tabObjects) {
-    const tabItem = document.importNode(tabTemplate, true).children[0];
-    // renderTab(tabObject, tabItem);
-    // registerTabEvents(tab, tabItem);
-    // windowItem.querySelector('#tabList').appendChild(tabItem);
-  }
-}
-*/
 
 function renderWindow(windowName, windowSavedAtTimestamp, tabObjects) {
   let windowTemplate = document.getElementById('windowItem').content;
@@ -158,20 +134,22 @@ function renderWindow(windowName, windowSavedAtTimestamp, tabObjects) {
   windowItem.querySelector('.window_name').innerText = windowName;
   windowItem.querySelector('.window_timestamp').innerText = new Date(windowSavedAtTimestamp).toLocaleString();
 
-  for (let tabObject of tabObjects) {
-    appendToLog(tabObject.url);
+  for (let tabObject in tabObjects) {
+    renderTab(tabObjects[tabObject], windowItem);
   }
-  windowItem.querySelector('.window_tabs').innerText = tabsText;
 
   const windowList = document.getElementById('windowList');
   windowList.appendChild(windowItem);
 }
 
-/*
-function renderTab(tab, tabItem) {
+function renderTab(tabObject, windowItem) {
+  let tabTemplate = document.getElementById('tabItem').content;
+  const tabItem = document.importNode(tabTemplate, true).children[0];
+  tabItem.querySelector('.tab_favicon').src = tabObject.favIconUrl;
 
+  const tabsList = windowItem.querySelector('#tabsList');
+  tabsList.appendChild(tabItem);
 }
-*/
 
 async function saveWindow() {
   try {
