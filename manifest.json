@@ -6,6 +6,9 @@
     "action": {
         "default_popup": "popup.html"
     },
+    "icons": {
+      "128": "dolphin128.png"
+    },
     "host_permissions": ["<all_urls>"],
     "permissions": [
       "storage", "tabs", "geolocation"
