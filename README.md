@@ -10,5 +10,6 @@ This is a convenient Chrome window stashing extension designed for this exact pu
 
 More features to come, including:
 
-- Reverse geocoding via maps API to show where you were when you stashed each window.
-- Summary of window contents via OpenAI API to further aid recognition of old stashed windows.
+- Reverse geocoding via maps API to show where you were when you stashed each window
+- Summary of window contents via OpenAI API to further aid recognition of old stashed windows
+- Publishing
