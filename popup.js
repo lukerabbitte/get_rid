@@ -143,11 +143,21 @@ const windowObject = {
 async function loadSavedWindows() {
   // Load window objects from local storage API
   chrome.storage.local.get(null, function(windows) {
+    // Convert the windows object into an array in order to sort by timestamp
+    let windowsArray = [];
     for (let windowObject in windows) {
-      if (windowObject.startsWith('GetRid_')) {    
-        renderWindow(windowObject, windows[windowObject]);
+      if (windowObject.startsWith('GetRid_')) {
+        windowsArray.push({key: windowObject, value: windows[windowObject]});
       }
     }
+
+    // Sort the array in reverse chronological order
+    windowsArray.sort((a, b) => b.value.savedAtTimestamp - a.value.savedAtTimestamp);
+
+    // Render each window
+    windowsArray.forEach(windowObject => {
+      renderWindow(windowObject.key, windowObject.value);
+    });
   });
 }
 
@@ -162,31 +172,55 @@ function renderWindow(windowObjectKey, windowObjectValue) {
   const windowItem = document.importNode(windowTemplate, true).children[0];
 
   // Passing the object key e.g. GetRid_1247408185 and windowItem DOM element
-  // registerWindowEvents(windowObjectKey, windowItem);
+  registerWindowEvents(windowObjectKey, windowItem);
 
+  // Populate elements of windowItem
   windowItem.querySelector('.window_emoji').innerText = windowEmoji;
   windowItem.querySelector('.window_timestamp').innerText = formattedDate;
 
+  // Populate the tabs within each windowItem
   for (let tabObject in windowTabObjects) {
     renderTab(windowTabObjects[tabObject], windowItem);
   }
 
+  // Add the finished product to the DOM
   const windowList = document.getElementById('windowList');
   windowList.appendChild(windowItem);
 }
 
-function registerWindowEvents(windowItem) {
+function registerWindowEvents(windowObjectKey, windowItem) {
   windowItem
-    .querySelector('.window_refresh')
+    .querySelector('.remove_window_button')
     .addEventListener('click', function () {
-      refreshWindow(window.id);
+      removeWindow(windowObjectKey);
+
+      // Add the fade-out class to start the transition
+      windowItem.classList.add('fade-out');
+
+      const otherWindowItems = Array.from(document.querySelectorAll('.window')).filter(item => item !== windowItem);
+
+      // Add the fade-in class to the other classes
+      otherWindowItems.forEach(item => item.classList.add('fade-in'));
+
+      // Wait for the transition to finish before removing the element
+      setTimeout(function() {
+        windowItem.remove();
+      }, 120); // Match this with the duration of your transition
     });
+
+  windowItem
+  .querySelector('.open_window_button')
+  .addEventListener('click', function () {
+    openWindow(windowObjectKey);
+  });
 }
+
 
 function renderTab(tabObjectValue, windowItem) {
   let tabTemplate = document.getElementById('tabItem').content;
   const tabItem = document.importNode(tabTemplate, true).children[0];
   tabItem.querySelector('.tab_favicon').src = tabObjectValue.favIconUrl;
+  tabItem.querySelector('.tab_title').textContent = tabObjectValue.title;
 
   const tabsList = windowItem.querySelector('#tabsList');
   tabsList.appendChild(tabItem);
@@ -197,7 +231,7 @@ async function saveWindow() {
     // Get current window information along with its tabs
     let window = await chrome.windows.getCurrent({ populate: true });
     tabs = {};
-    appendToLog(`Window of ID: ${window.id} has ${window.tabs.length} tabs`)
+    // appendToLog(`Window of ID: ${window.id} has ${window.tabs.length} tabs`)
     for(let tab of window.tabs) {
       tabs[tab.id] = tab;
       // appendToLog(`${tab.id}`)
@@ -217,7 +251,7 @@ async function saveWindow() {
     };
 
     chrome.storage.local.set(windowObject, function() {
-      appendToLog(`Window object of ID: ${window.id} has been saved locally`);
+      // appendToLog(`Window object of ID: ${window.id} has been saved locally`);
     });
   }
   catch (error) {
@@ -238,12 +272,44 @@ function appendToLog(logLine) {
     .appendChild(document.createElement('div')).innerText = '> ' + logLine;
 }
 
+function removeWindow(windowObjectKey) {
+  chrome.storage.local.remove(windowObjectKey, function() {
+    if (chrome.runtime.lastError) {
+      // appendToLog('An error occurred: ' + chrome.runtime.lastError.message);
+    } else {
+      // appendToLog('Window object: ' + windowObjectKey + ' removed from storage.');
+    }
+  });
+}
+
+function openWindow(windowObjectKey) {
+  chrome.storage.local.get([windowObjectKey], function(result) {
+    if (result[windowObjectKey]) {
+      let tabs = result[windowObjectKey].tabs;
+      let urls = [];
+      for(let tab in tabs) {
+        urls.push(tabs[tab].url);
+      }
+      chrome.windows.create({ url: urls, focused: true });
+    }
+  });
+}
+
 document
   .getElementById('saveWindowButton')
   .addEventListener('click', function() {
-    saveWindow();
-  })
+    saveWindow().then(() => {
+      // Add the fade-out class to the body
+      document.body.classList.add('fade-out');
+
+      // Wait for the transition to finish before reloading the page
+      setTimeout(() => location.reload(), 120); // Match this with the duration of your transition
+    });
+  });
 
 document.addEventListener('DOMContentLoaded', function () {
   bootstrap();
 });
+
+
+document.getElementById("youriframeid").contentWindow.location.reload(true);

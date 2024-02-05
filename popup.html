@@ -10,9 +10,9 @@
   </head>
 
   <body>
-    <div class="topContainer">
-      <h1 class="getRidEmoji">&#x1F42C;</h1>
-      <h1 class="getRidTitle">Get Rid</h1>
+    <div class="top_container">
+      <h1 class="get_rid_emoji">&#x1F42C;</h1>
+      <h1 class="get_rid_title">Get Rid</h1>
     </div>
     <button id="saveWindowButton">Get Rid</button>
     <div id="windowList">
@@ -21,15 +21,18 @@
 
     <template id="windowItem">
       <div class="window">
-        <div class="windowDescription">
-          <p class="window_emoji"></p>
-          <p class="window_timestamp"></p>
-        </div>
-        <div>
-          <button id="removeWindowButton">Delete Tabs</button>
-        </div>
-        <div id="tabsList">
-          <!-- tabItems here-->
+        <div class="window_frame">
+          <div class="window_options">
+            <div class="window_description">
+              <p class="window_emoji"></p>
+              <p class="window_timestamp"></p>
+            </div>
+            <button class="open_window_button">&#8599;</button>
+            <button class="remove_window_button">&times;</button>
+          </div>
+          <div id="tabsList">
+            <!-- tabItems here-->
+          </div>
         </div>
       </div>
     </template>
@@ -37,6 +40,7 @@
     <template id="tabItem">
       <div class="tab">
         <img class="tab_favicon" alt="Favicon">
+        <p class="tab_title"></p>
       </div>
     </template>
 
